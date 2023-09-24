@@ -4,6 +4,7 @@
   <title>Rectangle 6400</title>
   <link href="https://fonts.cdnfonts.com/css/space-grotesk" rel="stylesheet">
   <link href="https://fonts.cdnfonts.com/css/manrope" rel="stylesheet">
+  
   <style>
     /* Common styles */
     * {
@@ -79,7 +80,7 @@
       flex-shrink: 0;
       border-radius: 20px;
       background-color: white;
-      border: 1px solid #000;
+      border: 2px solid #000;
     }
 
     /* Popup styles */
@@ -101,7 +102,7 @@
       height: 700px;
       padding: 32px;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: center;
       gap: 12px;
       flex-shrink: 0;
       border-radius: 20px;
@@ -127,41 +128,343 @@
       color: #fff;
     }
     .result-box {
-      position:relative;
+      position:center;
       padding: 15px;
       background-color: black;
       width: 200%;
       border-radius: 10px;
       left:-400px;
-border: 1px solid #E5E5E5;
+      border: 1px solid #E5E5E5;
     }
     .option-content {
       display: none;
     }
     .login{
-      position:relative;
+      position:center;
 
   }
+  table {
+    position: relative;
+    left: 3%;
+    width: 90%;
+    margin: 20px 20px;
+    font-family: Space Grotesk;
+    border: 2px solid;
+    border-color: #000;
+    border-radius: 20px;
+  }
+
+  th {
+    border-bottom: 2px solid #000;
+    padding: 10px;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  td {
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .table-button {
+    background: #000;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+  .styled-form {
+  color: white;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.date-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px;
+  background-color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.submit-btn {
+  background-color: #0066cc;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  top:0%;
+}
+
+.add-address-btn {
+  background-color: white;
+  color: black;  /* Text color */
+  border: 1px solid black; /* Border to distinguish button from background */
+  padding: 10px;  /* Optional: add some padding */
+  margin-left: 5px;  /* Optional: add some margin */
+  cursor: pointer; /* Changes the cursor to a hand, indicating it's clickable */
+}
+.result-box {
+  color: white; /* Changed from black to match with the button style */
+  font-size: 16px;
+  text-align: center;
+  margin-top: 20px;
+}
+.submit-btn:hover {
+  background-color: #0052a3;
+}
+
   </style>
+  <script src="index1.js"></script>
+  <script>
+    let selectedOption = null;
+    
+    function showPopup() {
+      document.getElementById('popup').style.display = 'flex';
+    }
+
+    function showPopup2() {
+      console.log("Second Function called");
+      document.getElementById('popup2').style.display = 'flex';
+    }
+
+    function selectOption(optionId) {
+      if (selectedOption) {
+        document.getElementById(selectedOption).classList.remove('selected');
+        document.getElementById('content' + selectedOption.replace('option', '')).style.display = 'none';
+      }
+      document.getElementById(optionId).classList.add('selected');
+      document.getElementById('content' + optionId.replace('option', '')).style.display = 'block';
+      selectedOption = optionId;
+    }
+   
+    function submit(event) {
+      event.preventDefault();
+      const proposalForm = document.getElementById('proposal-form');
+      const formData = new FormData(proposalForm);
+      const proposalName = formData.get('proposal_name');
+
+      const table = document.getElementById('existingTable').getElementsByTagName('tbody')[0];
+      const newRow = table.insertRow();
+      newRow.innerHTML = `
+        <td>${proposalName}</td>
+        <td>Open</td>
+        <td>Available in 10 days</td>
+        <td>Public</td>
+      `;
+
+      document.getElementById('popup2').style.display = 'none';
+    }
+
+    // Add this function to print the QR Code to the div
+    function printQrCode() {
+    // Assuming that the wallet object and its address exist in your actual code
+    const wallet = { address: "some_address_here" };
+    
+    const qrCodeContainer = document.getElementById("qrCodeContainer");
+    new QRCode(qrCodeContainer, `https://go.cb-w.com/messaging?address=${wallet.address}`);
+  }
+  
+  // Call this function somewhere in your code, e.g., when the page loads
+  window.onload = function() {
+    printQrCode();
+  };
+// Stream all messages and display in the chatContainer
+async function stream_all_messages() {
+  const chatContainer = document.getElementById("chatContainer");
+  printQrCode();
+  
+  if (xmtp) {
+    for await (const message of await xmtp.conversations.streamAllMessages()) {
+      const messageDiv = document.createElement('div');
+      messageDiv.textContent = `New message from ${message.senderAddress}: ${message.content}`;
+      chatContainer.appendChild(messageDiv);
+      console.log(`New message from ${message.senderAddress}: ${message.content}`);
+    }
+  }
+}
+
+// Assume that your other functions are as they are
+// ...
+
+// Add this to the bottom of your JavaScript file
+async function executeAsyncCode() {
+  try {
+    await initialize_the_wallet();
+    await create_a_client();
+    await start_a_new_conversation();
+    await send_a_message();
+    await stream_all_messages();
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+}
+
+// You can call this function when the div is clicked
+
+
+  </script>
 </head>
 <body>
 
  <div id="root" class="login"></div>
  
-  <h1 class="first-header">Host a voting session for you, your peers or counterparts</h1>
+  <h1 class="first-header">Host a voting session for you, your peers or counterparts.</h1>
     
   <div class="leftBig"><button class="button2" onclick="showPopup()">
-    create session</button></div>
+    choose session</button></div>
   <div class="left">
-    <p class="forpro">dear proposers</p>
-    
-
+    <p class="forpro">Dear voters</p>
+    <p style="padding-left: 10%;">
+      <b> </b> <br>
+      <b>Participate in a voting session</b><br>
+  1. Find a poll<br>
+  2. Vote
+  </p>
   </div>
+  <div style="position: relative;top:50%;" onclick="showPopup2()">
+    <div class="leftBig" style="position:relative;left:750px;top:0px"><button class="button2" onclick="showPopup2()">create session</button></div>
+  <div class="left" style="position: relative;left:750px;top:-185px;background-color: white;">
+    <p class="forpro" style="position: relative;left:0px">Dear proposers</p>
+    <p style="padding-left: 10%;"> 
+    <b> </b> <br>
+    <b>Create your proposals voting session</b><br>
+  1. Set time-frame<br>
+  2. Choose who votes
+  </p>
+  </div>
+  </div>
+
+</div>
+  <table id="existingTable">
+    <thead>
+      <tr style="">
+        <th>Session</th>
+        <th>Status</th>
+        <th>Result</th>
+        <th>Visibility</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="font-size: 100px" onclick="showPopup()">
+        <td>Acquire Tonic Finance</td>
+        <td>Open</td>
+        <td>Available in: 5 days</td>
+        <td>Public</td>
+      </tr>
+      <tr>
+        <td>BAL AAVE Token Swap</td>
+        <td>Open in 2 days 8 hours</td>
+        <td>Available in: 8 days</td>
+        <td>Public</td>
+      </tr>
+      <tr style="font-size: 100px">
+        <td>Revised Treasury Diversification</td>
+        <td>Closed</td>
+        <td>Available</td>
+        <td>Public</td>
+      </tr>
+      <tr style="font-size: 100px">
+        <td>Fei-Rari Merger</td>
+        <td>Closed</td>
+        <td>Available</td>
+        <td>Private</td>
+      </tr>
+      <tr style="font-size: 100px">
+        <td>Gnosis-xDAI Temperature Check</td>
+        <td>Closed</td>
+        <td>Available</td>
+        <td>Private</td>
+      </tr>
+
+    </tbody>
+  </table>
+  <div id="qrCodeContainer"></div> <!-- Container for the QR code -->
+    <div id="chatContainer"></div> 
+  </div>
+  <div id="popup2" class="popup" style="display: none;">
+    <div class="mainpop">
+      <h1 style="color: #FFF;">New Proposal</h1>
+      <form id="proposal-form" class="styled-form" onsubmit="submit(event)">
+        <div class="form-group">
+          <label class="form-label">Proposal Name</label>
+          <input type="text" name="proposal_name" class="form-input">
+        </div>
+  
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea name="description" class="form-input"></textarea>
+        </div>
+  
+        <div class="form-group date-group">
+          <div>
+            <label class="form-label">Start Date</label>
+            <input type="date" name="start_date" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">End Date</label>
+            <input type="date" name="end_date" class="form-input">
+          </div>
+        </div>
+  
+        <div class="form-group">
+          <label class="form-label">Intent</label>
+          <select name="intent" class="form-input">
+            <option value="buy">Buy</option>
+            <option value="sell">Sell</option>
+            <option value="merge">Merge</option>
+          </select>
+        </div>
+     
+        <div class="form-group">
+          <label class="form-label">Vote Configuration</label>
+          <select name="intent" class="form-input">
+            <option value="TokenGated">Token Gated</option>
+            <option value="WalletGated">Wallet Gated</option>
+          </select>
+        </div>
+
+
+        <div class="form-group eth-address-section">
+          <label class="form-label">Enter eligible voters</label>
+          <div class="input-container">
+            <input type="text" name="ethereum_address" placeholder="Enter Ethereum address" class="form-input">
+            <button type="button" id="add-address-btn" class="add-address-btn">+</button>
+          </div>
+        </div>
+
+  
+        <button type="submit" class="submit-btn" >Submit</button>
+        </form>
+      </form>
+    </div>
+  </div>
+  
+
+
   <div id="popup" class="popup" style="display: none;">
     <div class="mainpop">
       <h1 style="color: #FFF; font-family: Manrope; font-size: 28px; font-style: normal; font-weight: 400; line-height: 24px;">Proposal To Acquire Tonic Finance</h1>
       <p class="description">By 0x2314123</p>
       <div class="option-container">
+
         <div class="option" id="option1" onclick="selectOption('option1')">
           September 15, 4:00pm                        
           <hr>
@@ -176,10 +479,38 @@ border: 1px solid #E5E5E5;
               <li>Voting will determine the acceptance or rejection of this acquisition.</li>
               <li>Successful acquisition will require strategic planning for seamless integration.</li>
             </ul>
-          </div>
+            <a href="https://xmtp-developer-quickstart.buibui69.repl.co">Chat with Participants</a>
+            <p class="description"><b>Submit Your order</b></p>
+            <ul class="description" style="width:200%">
+              <li>8/200 submitted.</li>
+            </ul>
+          
+            <div class="option-container">
+              <div class="form-group">
+                  <label class="form-label">Token Weight</label>
+                  <textarea name="description" class="form-input"></textarea>
+              </div>
+          
+              <div class="form-group">
+                  <label class="form-label">Vote</label>
+                  <textarea name="description" class="form-input"></textarea>
+              </div>
+          
+              <button class="table-button" id="vote1">Vote 1 Weight Token</button>
+              <button class="table-button" id="vote2">Vote 2 Weight Tokens</button>
         </div>
+
+        <div class="form-group">
+          <p class="description"><b>Submission Book</b></p>
+        </div>
+
+      </div>
+        
+    </div>
+    
+      
         <div class="option" id="option2" onclick="selectOption('option2')">
-          September 15, 4:30pm
+          September 15, 6:30pm
           <hr>
           Result
           <div class="option-content" id="content2">
@@ -192,22 +523,6 @@ border: 1px solid #E5E5E5;
     </div>
   </div>
 
-  <script>
-    let selectedOption = null;
-
-    function showPopup() {
-      document.getElementById('popup').style.display = 'flex';
-    }
-
-    function selectOption(optionId) {
-      if (selectedOption) {
-        document.getElementById(selectedOption).classList.remove('selected');
-        document.getElementById('content' + selectedOption.replace('option', '')).style.display = 'none';
-      }
-      document.getElementById(optionId).classList.add('selected');
-      document.getElementById('content' + optionId.replace('option', '')).style.display = 'block';
-      selectedOption = optionId;
-    }
-  </script>
+  
 </body>
 </html>
